@@ -57,14 +57,16 @@ class Stats(Resource):
     def get(self, id):
         conn = get_db_conn()
 
-
         url = request.host_url + id
 
         # gets data from an url
         url_data = get_url_data(conn, id, hashids)
 
+        # gets data from the clicks
+        clicks_data = get_clicks_data(conn, url)
+
         # gets the json format of the url's data
-        stats = stats_model(url, url_data[3], url_data[1], url_data[2])
+        stats = stats_model(url, url_data[3], url_data[1], url_data[2], clicks_data)
 
         return stats
 
@@ -72,9 +74,13 @@ class Stats(Resource):
 @app.route('/<id>')
 def redirect_route(id):
     conn = get_db_conn()
+
+    requester_ip_address = request.remote_addr
+    url = request.host_url + id
+
     old_url = find_old_url(conn, id, hashids)
 
-    update_clicks(conn, id, hashids)
+    update_clicks(conn, id, hashids, url, requester_ip_address)
 
     return redirect(old_url)
 

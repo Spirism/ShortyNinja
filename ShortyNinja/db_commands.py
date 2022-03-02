@@ -16,7 +16,6 @@ def get_url_data(conn, id, hashids):
         data = conn.execute('SELECT * FROM urls WHERE id = (?)', (original_id,))
         data = data.fetchone()
         conn.commit()
-        conn.close()
 
         return data
 
@@ -32,7 +31,16 @@ def find_old_url(conn, id, hashids):
         return old_url[0]
 
 
-def update_clicks(conn, id, hashids):
+def get_clicks_data(conn, url):
+    data = conn.execute("SELECT date, ip FROM clicks WHERE url = (?)", (url,)).fetchall()
+
+    conn.commit()
+    conn.close()
+
+    return data
+
+
+def update_clicks(conn, id, hashids, url, ip):
     original_id = hashids.decode(id)
     if original_id:
         original_id = original_id[0]
@@ -42,6 +50,11 @@ def update_clicks(conn, id, hashids):
         conn.execute('UPDATE urls SET clicks = (?) WHERE id = (?)', (clicks+1, original_id))
 
         conn.commit()
+
+        conn.execute('INSERT INTO clicks (url, ip) VALUES (?, ?)', (url, ip))
+
+        conn.commit()
+
         conn.close()
 
 
