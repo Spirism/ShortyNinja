@@ -40,7 +40,10 @@ class Shorten(Resource):
         # gets the url from the request
         url = args['url']
 
-        db_data = insert_url(conn, url)
+        # ip of the requester
+        ip = request.remote_addr
+
+        db_data = insert_url(conn, url, ip)
 
         url_id = db_data.lastrowid
         hash_id = hashids.encode(url_id)

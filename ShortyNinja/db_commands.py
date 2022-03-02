@@ -1,8 +1,8 @@
 import sqlite3
 
 
-def insert_url(conn, url):
-    data = conn.execute('INSERT INTO urls (original_url) VALUES (?)', (url,))
+def insert_url(conn, url, ip):
+    data = conn.execute('INSERT INTO urls (original_url, ip) VALUES (?, ?)', (url, ip))
     conn.commit()
     conn.close()
 
